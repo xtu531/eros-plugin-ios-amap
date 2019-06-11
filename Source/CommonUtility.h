@@ -35,4 +35,6 @@
 
 + (double)distanceToPoint:(MAMapPoint)p fromLineSegmentBetween:(MAMapPoint)l1 and:(MAMapPoint)l2;
 
++ (NSDictionary*)getObjectData:(id)obj;
+
 @end

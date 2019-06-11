@@ -10,6 +10,8 @@
 #import "WXMapViewComponent.h"
 #import "WXConvert+AMapKit.h"
 #import <WeexPluginLoader/WeexPluginLoader/WeexPluginLoader.h>
+#import "JYTLocationManager.h"
+#import "CommonUtility.h"
 
 WX_PlUGIN_EXPORT_MODULE(amap, WXMapViewModule)
 
@@ -25,6 +27,7 @@ WX_PlUGIN_EXPORT_COMPONENT(weex-amap-info-window, WXMapInfoWindowComponent)
 @synthesize weexInstance;
 
 WX_EXPORT_METHOD(@selector(initAmap:))
+WX_EXPORT_METHOD(@selector(getLocation:))
 WX_EXPORT_METHOD(@selector(getUserLocation:callback:))
 WX_EXPORT_METHOD(@selector(getLineDistance:marker:callback:))
 WX_EXPORT_METHOD_SYNC(@selector(polygonContainsMarker:ref:callback:))
@@ -32,6 +35,21 @@ WX_EXPORT_METHOD_SYNC(@selector(polygonContainsMarker:ref:callback:))
 - (void)initAmap:(NSString *)appkey
 {
     [[AMapServices sharedServices] setApiKey:appkey];
+}
+
+- (void)getLocation:(WXModuleCallback)callback
+{
+    
+    [[JYTLocationManager shareInstance] getLocation:^(NSString *lon, NSString *lat, AMapLocationReGeocode *reGeocode) {
+        if (lon&&lat) {
+            NSDictionary *userDic = @{@"result":@"success",@"data":@{@"position":[CommonUtility getObjectData:reGeocode],@"title":@""}};
+            callback(userDic);
+            return ;
+        }
+        
+        callback(@{@"resuldt":@"false",@"data":@""});
+        
+    }];
 }
 
 - (void)getUserLocation:(NSString *)elemRef callback:(WXModuleCallback)callback
