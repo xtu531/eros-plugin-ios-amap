@@ -8,6 +8,7 @@
 
 #import "CommonUtility.h"
 //#import "LineDashPolyline.h"
+#import <objc/runtime.h>
 
 @implementation CommonUtility
 
