@@ -42,7 +42,9 @@ WX_EXPORT_METHOD_SYNC(@selector(polygonContainsMarker:ref:callback:))
     
     [[JYTLocationManager shareInstance] getLocation:^(NSString *lon, NSString *lat, AMapLocationReGeocode *reGeocode) {
         if (lon&&lat&&reGeocode) {
-            NSDictionary *userDic = @{@"result":@"success",@"data":@{@"city":reGeocode.city?reGeocode.city:@"",@"citycode":reGeocode.adcode?reGeocode.adcode:@"",@"title":@""}};
+            
+            NSArray *position = @[lon,lat];
+            NSDictionary *userDic = @{@"result":@"success",@"data":@{@"city":reGeocode.city?reGeocode.city:@"",@"citycode":reGeocode.adcode?reGeocode.adcode:@"",@"position":position,@"title":@""}};
             callback(userDic);
             return ;
         }
