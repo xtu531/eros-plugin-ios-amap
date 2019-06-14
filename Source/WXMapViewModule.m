@@ -27,7 +27,7 @@ WX_PlUGIN_EXPORT_COMPONENT(weex-amap-info-window, WXMapInfoWindowComponent)
 @synthesize weexInstance;
 
 WX_EXPORT_METHOD(@selector(initAmap:))
-WX_EXPORT_METHOD(@selector(getLocation:))
+WX_EXPORT_METHOD(@selector(getLocation:callback:))
 WX_EXPORT_METHOD(@selector(getUserLocation:callback:))
 WX_EXPORT_METHOD(@selector(getLineDistance:marker:callback:))
 WX_EXPORT_METHOD_SYNC(@selector(polygonContainsMarker:ref:callback:))
@@ -37,12 +37,12 @@ WX_EXPORT_METHOD_SYNC(@selector(polygonContainsMarker:ref:callback:))
     [[AMapServices sharedServices] setApiKey:appkey];
 }
 
-- (void)getLocation:(WXModuleCallback)callback
+- (void)getLocation:(NSString *)elemRef callback:(WXModuleCallback)callback
 {
     
     [[JYTLocationManager shareInstance] getLocation:^(NSString *lon, NSString *lat, AMapLocationReGeocode *reGeocode) {
-        if (lon&&lat) {
-            NSDictionary *userDic = @{@"result":@"success",@"data":@{@"position":[CommonUtility getObjectData:reGeocode],@"title":@""}};
+        if (lon&&lat&&reGeocode) {
+            NSDictionary *userDic = @{@"result":@"success",@"data":@{@"city":reGeocode.city?reGeocode.city:@"",@"citycode":reGeocode.adcode?reGeocode.adcode:@"",@"title":@""}};
             callback(userDic);
             return ;
         }
@@ -81,7 +81,7 @@ WX_EXPORT_METHOD_SYNC(@selector(polygonContainsMarker:ref:callback:))
         CLLocationCoordinate2D loc1 = [WXConvert CLLocationCoordinate2D:position];
         MAMapPoint p1 = MAMapPointForCoordinate(loc1);
         NSDictionary *userDic;
-
+        
         if (![WXMapRenderer.shape isKindOfClass:[MAMultiPoint class]]) {
             userDic = @{@"result":@"false",@"data":[NSNumber numberWithBool:NO]};
             return;
@@ -90,7 +90,7 @@ WX_EXPORT_METHOD_SYNC(@selector(polygonContainsMarker:ref:callback:))
         NSUInteger pointCount = ((MAMultiPoint *)WXMapRenderer.shape).pointCount;
         
         if(MAPolygonContainsPoint(p1, points, pointCount)) {
-             userDic = @{@"result":@"success",@"data":[NSNumber numberWithBool:YES]};
+            userDic = @{@"result":@"success",@"data":[NSNumber numberWithBool:YES]};
         } else {
             userDic = @{@"result":@"false",@"data":[NSNumber numberWithBool:NO]};
         }
